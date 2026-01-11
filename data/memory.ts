@@ -1,0 +1,16 @@
+export const memory = [
+  "What moment made you realize this relationship was serious?",
+  "Describe a memory of us that still makes your heart soften.",
+  "What was your first impression of me—and how has it changed?",
+  "What challenge did we overcome that made us stronger?",
+  "What’s a quiet moment we’ve shared that you’ll never forget?",
+  "What’s the most unexpected thing you’ve learned about love with me?",
+  "When did you feel closest to me for the first time?",
+  "What early sign told you I mattered more than you expected?",
+  "What season of our relationship taught you the most?",
+  "What’s one shared memory you wish we could relive?",
+  "What was a turning point that deepened your commitment?",
+  "What have we survived together that still amazes you?",
+  "What moment with me felt like destiny, not coincidence?",
+  "What’s a memory of us that deserves to be celebrated more?",
+];

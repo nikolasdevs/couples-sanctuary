@@ -1,0 +1,17 @@
+export const connection = [
+  "What first made you feel emotionally safe with me?",
+  "When do you feel most loved by me—without me saying a word?",
+  "What part of my personality brings you the most peace?",
+  "How have I grown since the day we met?",
+  "What does “home” feel like when you think of us?",
+  "When you’re overwhelmed, what do you need most from me?",
+  "What’s something I do that you wish I knew mattered deeply?",
+  "How do you know I’m truly listening to you?",
+  "What’s one way I can show up better for you this year?",
+  "When do you feel proud to call me your partner?",
+  "What makes our connection different from past relationships?",
+  "What does emotional intimacy mean to you right now?",
+  "How do you like to receive love when words aren’t enough?",
+  "What’s one small habit of mine you secretly adore?",
+  "In one sentence, describe what being with me feels like.",
+];

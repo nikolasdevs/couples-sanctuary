@@ -1,0 +1,16 @@
+export const challenge = [
+  "Hold hands and maintain eye contact for 60 seconds.",
+  "Whisper one thing you’ve never said to me before.",
+  "Give me a compliment without using words.",
+  "Kiss me somewhere unexpected but tender.",
+  "Say “I love you” in a way you never have before.",
+  "Describe me as if I were a love poem.",
+  "Look at me like it’s our first date.",
+  "Share one fantasy that starts with “One day, us…”",
+  "Slow dance together for 30 seconds.",
+  "Say thank you for something I do that goes unnoticed.",
+  "Touch my hand and tell me what it means to you.",
+  "Describe our relationship using only three words.",
+  "Give me a gentle kiss that says “I choose you.”",
+  "End this round by sharing one promise you want to keep.",
+];

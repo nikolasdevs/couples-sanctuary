@@ -1,0 +1,16 @@
+export const desire = [
+  "What makes you feel most desired by me?",
+  "When do you feel most attractive around me?",
+  "Describe a romantic moment you want us to create together.",
+  "What kind of touch makes you feel instantly closer to me?",
+  "What’s something subtle I do that turns you on emotionally?",
+  "How do you like to be pursued in love?",
+  "What makes intimacy with me feel different from anyone else?",
+  "What kind of romance do you crave more of from us?",
+  "When do you feel most connected during physical closeness?",
+  "What’s one desire you feel safe exploring with me?",
+  "What does passion mean to you right now?",
+  "How can I make you feel more wanted outside the bedroom?",
+  "What part of our intimacy feels sacred to you?",
+  "Describe a moment when love and desire blended perfectly.",
+];
