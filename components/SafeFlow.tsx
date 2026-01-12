@@ -38,7 +38,7 @@ export default function SafeFlow({
               onClick={onReconsider}
               className="w-full text-emerald-400 text-sm underline"
             >
-              Cancel / Reconsider
+              Reconsider
             </button>
             <button
               onClick={onEnd}
