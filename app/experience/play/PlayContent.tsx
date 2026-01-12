@@ -237,7 +237,7 @@ export default function PlayContent() {
             <Progress current={index + 1} total={sanctuaryFlow.length} />
           )}
 
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col items-center gap-8">
             {" "}
             {mode === "category" && selectedCategory && (
               <button
@@ -252,7 +252,7 @@ export default function PlayContent() {
                 localStorage.removeItem("sanctuary-current-card");
                 router.push("/experience/end");
               }}
-              className="    text- text-[#B11226]
+              className="text-[#B11226]
     border border-[#B11226]
     px-4 py-3 rounded-full
     cursor-pointer
