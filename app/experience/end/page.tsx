@@ -3,6 +3,16 @@ import Link from "next/link";
 export default function EndPage() {
   return (
     <main className="min-h-screen flex items-center justify-center px-6 text-center flex-col space-y-12">
+      <div className="absolute inset-0 -z-30">
+        <div
+          className="w-full h-full bg-cover bg-center midnight"
+          style={{
+            backgroundImage:
+              "url('https://res.cloudinary.com/dpnzmcban/image/upload/v1768177737/IMG_7222_aiwfpo.jpg')",
+          }}
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/80 to-black/80 backdrop-blur-[2px]" />
+      </div>
       <div className="max-w-md space-y-8">
         <h2 className="text-3xl font-serif">Closing the Sanctuary</h2>
         <p className="text-neutral-300">
@@ -13,7 +23,15 @@ export default function EndPage() {
         </p>
       </div>
       <div>
-        <button className=" bg-amber-400 px-6 py-2 rounded-full text-black font-medium">
+        <button
+          className="text-sm text-[#B11226]
+    border border-[#B11226]
+    px-4 py-3 rounded-full
+    cursor-pointer
+    pointer-events-auto
+    hover:bg-[#B11226] hover:text-red-50
+    transition-all hover:font-semibold font-medium"
+        >
           <Link href="/">Return to Home</Link>
         </button>
       </div>

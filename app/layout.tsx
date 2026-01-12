@@ -1,12 +1,6 @@
-import { MidnightProvider } from "@/context/MidnightContext";
 import type { Metadata } from "next";
-import { Montserrat, Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
-
-const montserrat = Montserrat({
-  variable: "--font-montserrat-sans",
-  subsets: ["latin"],
-});
 
 const poppins = Poppins({
   variable: "--font-poppins-mono",
@@ -25,11 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${montserrat.variable} ${poppins.variable} antialiased`}
-      >
-        <MidnightProvider>{children}</MidnightProvider>
-      </body>
+      <body className={` ${poppins.variable} antialiased`}>{children}</body>
     </html>
   );
 }

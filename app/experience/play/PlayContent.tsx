@@ -131,6 +131,17 @@ export default function PlayContent() {
         setTouchStartX(null);
       }}
     >
+      <div className="absolute inset-0 z-0 pointer-events-none select-none">
+        <div
+          className="w-full h-full bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://res.cloudinary.com/dpnzmcban/image/upload/v1768124994/ba8728b6-a5a4-4659-b3d5-3b2946b04fcb_qtq1yh.jpg')",
+          }}
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/80 to-black/90 backdrop-blur-[2px]" />
+      </div>
+
       {pause && <PauseOverlay onResume={() => setPause(false)} />}
 
       {safe === "active" && (
@@ -179,26 +190,30 @@ export default function PlayContent() {
       )}
 
       {!categoryMode && (
-        <div className="max-w-xl space-y-10">
-          <span
-            className={`uppercase text-amber-400 tracking-widest text-sm transition-opacity duration-300 ${
-              fading ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            {card.category}
-          </span>
+        <div className="max-w-xl space-y-16 z-30 pointer-events-auto">
+          <AmbientAudio />
+          <div className="flex flex-col gap-4">
+            <span
+              className={` uppercase text-amber-400 tracking-widest font-semibold text-sm transition-opacity duration-300 ${
+                fading ? "opacity-0" : "opacity-100"
+              }`}
+            >
+              {card.category}
+            </span>
 
-          <p
-            className={`text-2xl md:text-3xl font-serif leading-relaxed transition-opacity duration-300 ${
-              fading ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            {card.text}
-          </p>
-
+            <p
+              className={`text-2xl md:text-3xl font-semibold font-serif leading transition-opacity duration-300 ${
+                fading ? "opacity-0" : "opacity-100"
+              }`}
+            >
+              {card.text}
+            </p>
+          </div>
           <div className="flex justify-center gap-4">
-            <AmbientAudio />
-            <button onClick={() => setPause(true)} className="text-neutral-400">
+            <button
+              onClick={() => setPause(true)}
+              className="text-neutral-400 font-semibold"
+            >
               ⏸ Pause
             </button>
             <button
@@ -212,7 +227,7 @@ export default function PlayContent() {
                 setSafe("active");
                 setPause(false);
               }}
-              className="text-red-400"
+              className="text-emerald-600 font-semibold"
             >
               🕊 Safe
             </button>
@@ -237,7 +252,14 @@ export default function PlayContent() {
                 localStorage.removeItem("sanctuary-current-card");
                 router.push("/experience/end");
               }}
-              className="text-sm text-red-400 border px-4 py-2 rounded-full hover:border-red-400 hover:bg-red-400 hover:text-red-50 transition-self"
+              className="    text- text-[#B11226]
+    border border-[#B11226]
+    px-4 py-3 rounded-full
+    cursor-pointer
+    pointer-events-auto
+    hover:bg-[#B11226] hover:text-red-50
+    transition-all hover:font-semibold font-medium
+"
             >
               End Session
             </button>

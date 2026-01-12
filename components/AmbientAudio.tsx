@@ -25,7 +25,7 @@ export default function AmbientAudio() {
       />
       <button
         onClick={toggle}
-        className={`${playing ? "text-red-400" : "text-green-400"} text-2xl`}
+        className={`${playing ? "text-red-400" : "text-emerald-600"} text-2xl`}
       >
         {playing ? <MdPauseCircle /> : <MdPlayCircle />}
       </button>
