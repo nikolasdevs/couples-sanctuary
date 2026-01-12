@@ -14,8 +14,10 @@ export default function EndPage() {
         <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/80 to-black/80 backdrop-blur-[2px]" />
       </div>
       <div className="max-w-md space-y-8">
-        <h2 className="text-3xl font-serif">Closing the Sanctuary</h2>
-        <p className="text-neutral-300">
+        <h2 className="text-3xl font-serif font-semibold">
+          Closing the Sanctuary
+        </h2>
+        <p className="text-neutral-300 font-semibold  text-center p-4">
           Look at your partner. Say one promise you want to keep for us.
         </p>
         <p className="text-xs text-neutral-500">

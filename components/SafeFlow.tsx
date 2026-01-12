@@ -28,23 +28,25 @@ export default function SafeFlow({
 
           <button
             onClick={onSkip}
-            className="w-full border border-neutral-700 py-3 rounded-xl"
+            className="w-full border border-neutral-700 py-3 rounded-xl hover:border-amber-400"
           >
             Skip this card
           </button>
-          <button
-            onClick={onReconsider}
-            className="w-full text-neutral-400 text-sm underline"
-          >
-            Cancel / Reconsider
-          </button>
-
-          <button
-            onClick={onEnd}
-            className="w-full text-red-400 text-sm underline"
-          >
-            End session
-          </button>
+          <div className="flex items-center justify-center mt-10">
+            {" "}
+            <button
+              onClick={onReconsider}
+              className="w-full text-emerald-400 text-sm underline"
+            >
+              Cancel / Reconsider
+            </button>
+            <button
+              onClick={onEnd}
+              className="w-full text-red-400 text-sm underline"
+            >
+              End session
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -27,6 +27,8 @@ export default function PlayContent() {
 
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
+  const [mounted, setMounted] = useState(false);
+
   const generateCard = () => {
     if (mode === "sanctuary") {
       const category = sanctuaryFlow[index];
@@ -51,13 +53,40 @@ export default function PlayContent() {
   const [currentCard, setCurrentCard] = useState<{
     category: string;
     text: string;
-  }>(() => generateCard());
+  } | null>(null);
 
   useEffect(() => {
     if (mode === "category") {
       setCategoryMode(true);
     }
   }, [mode]);
+
+  useEffect(() => {
+    // run only on client
+    setMounted(true);
+
+    const saved =
+      typeof window !== "undefined" &&
+      localStorage.getItem("sanctuary-current-card");
+
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+
+        if (parsed.mode === mode) {
+          setIndex(parsed.index);
+          setCurrentCard(parsed.card);
+          return;
+        }
+      } catch {
+        // ignore parse errors
+      }
+    }
+
+    // generate a deterministic card on client mount
+    setCurrentCard(generateCard());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on client mount
 
   useEffect(() => {
     if (!currentCard) return;
@@ -73,23 +102,15 @@ export default function PlayContent() {
   }, [currentCard, index, mode]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("sanctuary-current-card");
-
-    if (saved) {
-      const parsed = JSON.parse(saved);
-
-      if (parsed.mode === mode) {
-        setIndex(parsed.index);
-        setCurrentCard(parsed.card);
-        return;
-      }
+    if (mode === "category") {
+      setCategoryMode(true);
     }
+  }, [mode]);
 
-    setCurrentCard(generateCard());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (!currentCard) return null;
+  if (!mounted || !currentCard) {
+    // render nothing (or a lightweight skeleton) until client has mounted and card generated
+    return null;
+  }
   const card = currentCard;
 
   const handleNext = () => {
