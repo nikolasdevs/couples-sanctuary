@@ -223,7 +223,7 @@ export default function PlayContent() {
             </span>
 
             <p
-              className={`text-2xl md:text-3xl font-semibold font-serif leading transition-opacity duration-300 ${
+              className={`text-2xl md:text-3xl font-semibold font-serif leading transition-opacity duration-200 ${
                 fading ? "opacity-0" : "opacity-100"
               }`}
             >

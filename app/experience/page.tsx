@@ -1,5 +1,5 @@
 // app/experience/page.tsx
-import Link from "next/link";
+import { FocusCardsDemo } from "@/components/FocusCards";
 
 export default function ExperiencePage() {
   return (
@@ -14,12 +14,15 @@ export default function ExperiencePage() {
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/80 to-black/80 backdrop-blur-[2px]" />
       </div>
-      <div className="max-w-md w-full space-y-6 text-center">
-        <h2 className="text-2xl md:text-4xl font-semibold">
+      <div className="max-w-7xl m-auto w-full space-y-6 text-center">
+        <h2 className="text-2xl md:text-4xl font-semibold text-white">
           Choose Your Experience
         </h2>
+        <div className="mt-8">
+          <FocusCardsDemo />
+        </div>
 
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           <Link
             href="/experience/play?mode=shuffle"
             className="block w-full rounded-xl border border-neutral-700 py-4 hover:border-amber-400 transition font-medium"
@@ -40,7 +43,7 @@ export default function ExperiencePage() {
           >
             Choose a Category
           </Link>
-        </div>
+        </div> */}
 
         <p className="text-xs text-neutral-400">
           You can pause or stop at any time.
