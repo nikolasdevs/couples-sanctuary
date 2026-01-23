@@ -10,11 +10,33 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 type SanctuaryLen = "quick" | "standard" | "deep";
 
-export default function ExperiencePage() {
+function ExperienceFallback() {
+  return (
+    <main className="relative min-h-dvh overflow-hidden bg-[#0A0A0A] px-6">
+      <div className="absolute inset-0 -z-20">
+        <div
+          className="h-full w-full bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://res.cloudinary.com/dpnzmcban/image/upload/v1768124994/ba8728b6-a5a4-4659-b3d5-3b2946b04fcb_qtq1yh.jpg')",
+          }}
+        />
+        <div className="absolute inset-0 bg-linear-to-b from-black/65 via-black/80 to-black/90" />
+        <div className="absolute inset-0 shadow-[inset_0_0_160px_rgba(0,0,0,0.85)]" />
+      </div>
+
+      <div className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col justify-center py-10 text-center">
+        <div className="text-white/50">Loading experience options...</div>
+      </div>
+    </main>
+  );
+}
+
+function ExperienceContent() {
   const reduceMotion = useReducedMotion();
   const router = useRouter();
   const params = useSearchParams();
@@ -268,5 +290,13 @@ export default function ExperiencePage() {
         )}
       </AnimatePresence>
     </main>
+  );
+}
+
+export default function ExperiencePage() {
+  return (
+    <Suspense fallback={<ExperienceFallback />}>
+      <ExperienceContent />
+    </Suspense>
   );
 }
