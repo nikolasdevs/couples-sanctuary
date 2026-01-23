@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 
 type Card = { category: string; text: string };
 type SafeState = null | "active" | "confirm" | "redirect";
+type SanctuaryLen = "quick" | "standard" | "deep";
 
 const SAFE_REDIRECT_COUNT = 3;
 
@@ -30,6 +31,37 @@ const actionBase =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B11226]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black " +
   "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99]";
 
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function buildSanctuarySequence(total: number, seed: number) {
+  const base = sanctuaryFlow;
+  const out: string[] = [];
+
+  // Start with the authored arc first
+  for (let i = 0; i < Math.min(total, base.length); i++) out.push(base[i]);
+
+  // Extend (avoid immediate repeats)
+  const rnd = mulberry32(seed);
+  while (out.length < total) {
+    const last = out[out.length - 1];
+    let pick = last;
+
+    for (let guard = 0; guard < 6 && pick === last; guard++) {
+      pick = base[Math.floor(rnd() * base.length)]!;
+    }
+    out.push(pick);
+  }
+
+  return out;
+}
+
 export default function PlayContent() {
   const params = useSearchParams();
   const router = useRouter();
@@ -37,22 +69,52 @@ export default function PlayContent() {
 
   const mode = params.get("mode") || "shuffle";
 
-  const [index, setIndex] = useState(0);
-  const [pause, setPause] = useState(false);
-  const [safe, setSafe] = useState<SafeState>(null);
+  const sanctuaryLen: SanctuaryLen = (() => {
+    const raw = params.get("len");
+    if (raw === "quick" || raw === "standard" || raw === "deep") return raw;
+    return "standard";
+  })();
+
+  const sanctuaryTotalByLen = { quick: 20, standard: 40, deep: 60 } as const;
+
+  const sanctuaryTotal =
+    mode === "sanctuary" ? sanctuaryTotalByLen[sanctuaryLen] : 0;
+
+  // seed per length so reloads keep the same extended flow
+  const [sanctuarySeed] = useState<number>(() => {
+    if (typeof window === "undefined") return 1;
+    const key = `cs:sanctuary:seed:${sanctuaryLen}`;
+    const existing = window.localStorage.getItem(key);
+    if (existing) return Number(existing) || 1;
+    const next = Math.floor(Math.random() * 2 ** 31);
+    window.localStorage.setItem(key, String(next));
+    return next;
+  });
+
+  const sanctuarySequence = useMemo(() => {
+    if (mode !== "sanctuary") return [];
+    return buildSanctuarySequence(sanctuaryTotal, sanctuarySeed);
+  }, [mode, sanctuaryTotal, sanctuarySeed]);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const needsCategoryPick = mode === "category" && !selectedCategory;
 
-  // ✅ Temporary “change direction” override (works in shuffle/sanctuary)
-  const [forcedCategory, setForcedCategory] = useState<string | null>(null);
-  const [forcedRemaining, setForcedRemaining] = useState<number>(0);
-
+  // ✅ include len in storageKey for sanctuary so sessions don't collide
   const storageKey = useMemo(() => {
     if (mode === "category")
       return `sanctuary-current-card:${mode}:${selectedCategory ?? ""}`;
+    if (mode === "sanctuary")
+      return `sanctuary-current-card:${mode}:${sanctuaryLen}`;
     return `sanctuary-current-card:${mode}`;
-  }, [mode, selectedCategory]);
+  }, [mode, selectedCategory, sanctuaryLen]);
+
+  const [index, setIndex] = useState(0);
+  const [pause, setPause] = useState(false);
+  const [safe, setSafe] = useState<SafeState>(null);
+
+  // ✅ Temporary “change direction” override (works in shuffle/sanctuary)
+  const [forcedCategory, setForcedCategory] = useState<string | null>(null);
+  const [forcedRemaining, setForcedRemaining] = useState<number>(0);
 
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -74,7 +136,9 @@ export default function PlayContent() {
 
     // 2) Sanctuary flow uses fixed category order
     if (mode === "sanctuary") {
-      const category = sanctuaryFlow[nextIndex];
+      const category =
+        sanctuarySequence[nextIndex] ??
+        sanctuarySequence[sanctuarySequence.length - 1];
       return {
         category,
         text: randomItem(decks[category as keyof typeof decks]),
@@ -185,7 +249,7 @@ export default function PlayContent() {
     if (!mounted || pause || safe || busy) return;
 
     // End automatically when sanctuary flow completes
-    if (mode === "sanctuary" && index + 1 >= sanctuaryFlow.length) {
+    if (mode === "sanctuary" && index + 1 >= sanctuaryTotal) {
       endSession();
       return;
     }
@@ -388,8 +452,8 @@ export default function PlayContent() {
               {mode === "sanctuary" ? (
                 <div className="min-w-[180px]">
                   <Progress
-                    current={Math.min(index + 1, sanctuaryFlow.length)}
-                    total={sanctuaryFlow.length}
+                    current={Math.min(index + 1, sanctuaryTotal)}
+                    total={sanctuaryTotal}
                   />
                 </div>
               ) : (
@@ -455,7 +519,7 @@ export default function PlayContent() {
                 whileTap={reduceMotion ? undefined : { scale: 0.99 }}
                 className={[
                   "w-full rounded-full py-4 text-base font-semibold text-white",
-                  "bg-gradient-to-r from-rose-500 to-[#B11226]",
+                  "bg-linear-to-r from-rose-500 to-[#B11226]",
                   "shadow-lg shadow-rose-900/25 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 active:translate-y-0",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B11226]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
                   "disabled:opacity-60 disabled:hover:translate-y-0 disabled:active:scale-100",

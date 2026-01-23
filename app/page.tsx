@@ -131,7 +131,7 @@ export default function LandingPage() {
             >
               <Link
                 href="/experience"
-                className=" w-full inline-block rounded-full bg-gradient-to-r from-rose-500 to-[#B11226] py-3.5 text-center text-base font-semibold text-white hover:text-white shadow-lg shadow-rose-900/25 transition hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B11226]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-black active:scale-[0.99]"
+                className=" w-full inline-block rounded-full bg-linear-to-r from-rose-500 to-[#B11226] py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-rose-900/25 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B11226]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-black active:scale-[0.99] hover:bg-linear-to-r hover:from-rose-100 hover:to-[#ee8290]"
                 aria-label="Start the experience"
               >
                 <span className="relative z-10">Start Together</span>

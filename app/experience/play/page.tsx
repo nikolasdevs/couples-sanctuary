@@ -15,7 +15,7 @@ function PlayFallback() {
               "url('https://res.cloudinary.com/dpnzmcban/image/upload/v1768124994/ba8728b6-a5a4-4659-b3d5-3b2946b04fcb_qtq1yh.jpg')",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/80 to-black/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/65 via-black/80 to-black/90" />
         <div className="absolute inset-0 shadow-[inset_0_0_160px_rgba(0,0,0,0.85)]" />
       </div>
 

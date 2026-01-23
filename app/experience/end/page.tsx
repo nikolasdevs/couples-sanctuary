@@ -19,7 +19,7 @@ export default function EndPage() {
               "url('https://res.cloudinary.com/dpnzmcban/image/upload/v1768177737/IMG_7222_aiwfpo.jpg')",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/80 to-black/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/65 via-black/80 to-black/90" />
         <div className="absolute inset-0 shadow-[inset_0_0_160px_rgba(0,0,0,0.85)]" />
       </div>
 

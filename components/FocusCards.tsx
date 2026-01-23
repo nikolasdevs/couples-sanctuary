@@ -5,7 +5,7 @@ export function FocusCardsDemo() {
     {
       title: "Sanctuary Flow",
       src: "https://res.cloudinary.com/dpnzmcban/image/upload/v1768177741/IMG_7221_otbxdj.jpg",
-      link: "/experience/play?mode=sanctuary",
+      link: "/experience?flow=sanctuary",
       featured: true,
       description:
         "A guided progression designed to deepen connection step by step.",
