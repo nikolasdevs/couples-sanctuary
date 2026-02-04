@@ -10,7 +10,7 @@ const buttonBase =
 
 export default function EndPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 text-center flex-col space-y-12">
+    <main className="min-h-screen flex items-center justify-center px-6 py-8 md:py-12 text-center flex-col space-y-12 ">
       {/* Background */}
       <div className="absolute inset-0 -z-20 pointer-events-none select-none">
         <div
