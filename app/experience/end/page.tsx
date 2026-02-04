@@ -1,3 +1,4 @@
+import FeedbackForm from "@/components/FeedbackForm";
 import InstallPwaButton from "@/components/InstallPwaButton";
 import Link from "next/link";
 
@@ -40,6 +41,8 @@ export default function EndPage() {
           Thank you for choosing presence.
         </p>
       </div>
+
+      <FeedbackForm />
 
       <div className="flex items-center justify-center gap-3 flex-wrap">
         <Link

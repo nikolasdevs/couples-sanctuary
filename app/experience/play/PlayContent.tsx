@@ -122,6 +122,40 @@ export default function PlayContent() {
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Track played cards per category to avoid repeats
+  const [cardHistory, setCardHistory] = useState<Record<string, Set<string>>>(
+    {},
+  );
+
+  const getNextCardFromDeck = (deckKey: string): string => {
+    const deck = decks[deckKey as keyof typeof decks];
+    const history = cardHistory[deckKey] ?? new Set();
+
+    // If we've shown all cards, reset history
+    if (history.size >= deck.length) {
+      const newHistory: Record<string, Set<string>> = { ...cardHistory };
+      newHistory[deckKey] = new Set();
+      setCardHistory(newHistory);
+      return randomItem(deck);
+    }
+
+    // Find a card we haven't shown yet
+    let attempts = 0;
+    let card = randomItem(deck);
+    while (history.has(card) && attempts < 50) {
+      card = randomItem(deck);
+      attempts++;
+    }
+
+    // Mark this card as shown
+    const newHistory: Record<string, Set<string>> = { ...cardHistory };
+    newHistory[deckKey] = new Set(history);
+    newHistory[deckKey].add(card);
+    setCardHistory(newHistory);
+
+    return card;
+  };
+
   const generateCard = (
     nextIndex: number,
     overrideCategory?: string | null,
@@ -130,7 +164,7 @@ export default function PlayContent() {
     if (overrideCategory) {
       return {
         category: overrideCategory,
-        text: randomItem(decks[overrideCategory as keyof typeof decks]),
+        text: getNextCardFromDeck(overrideCategory),
       };
     }
 
@@ -141,7 +175,7 @@ export default function PlayContent() {
         sanctuarySequence[sanctuarySequence.length - 1];
       return {
         category,
-        text: randomItem(decks[category as keyof typeof decks]),
+        text: getNextCardFromDeck(category),
       };
     }
 
@@ -149,14 +183,14 @@ export default function PlayContent() {
     if (mode === "category" && selectedCategory) {
       return {
         category: selectedCategory,
-        text: randomItem(decks[selectedCategory as keyof typeof decks]),
+        text: getNextCardFromDeck(selectedCategory),
       };
     }
 
     // 4) Shuffle
     const categories = Object.keys(decks) as (keyof typeof decks)[];
     const category = randomItem(categories);
-    return { category, text: randomItem(decks[category]) };
+    return { category, text: getNextCardFromDeck(category) };
   };
 
   // Mount + restore
@@ -171,10 +205,14 @@ export default function PlayContent() {
     if (needsCategoryPick) {
       setCurrentCard(null);
       setIndex(0);
+      setCardHistory({});
       return;
     }
 
     const saved = localStorage.getItem(storageKey);
+    const historyKey = `${storageKey}:history`;
+    const savedHistory = localStorage.getItem(historyKey);
+
     if (saved) {
       try {
         const parsed = JSON.parse(saved) as {
@@ -199,6 +237,23 @@ export default function PlayContent() {
           setForcedCategory(parsed.forcedCategory ?? null);
           setForcedRemaining(parsed.forcedRemaining ?? 0);
 
+          // restore card history
+          if (savedHistory) {
+            try {
+              const historyData = JSON.parse(savedHistory) as Record<
+                string,
+                string[]
+              >;
+              const historyMap: Record<string, Set<string>> = {};
+              for (const [key, cards] of Object.entries(historyData)) {
+                historyMap[key] = new Set(cards);
+              }
+              setCardHistory(historyMap);
+            } catch {
+              setCardHistory({});
+            }
+          }
+
           return;
         }
       } catch {
@@ -210,6 +265,7 @@ export default function PlayContent() {
     setCurrentCard(generateCard(0, null));
     setForcedCategory(null);
     setForcedRemaining(0);
+    setCardHistory({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted, mode, selectedCategory, needsCategoryPick, storageKey]);
 
@@ -229,6 +285,14 @@ export default function PlayContent() {
         forcedRemaining: mode === "category" ? 0 : forcedRemaining,
       }),
     );
+
+    // Save card history
+    const historyKey = `${storageKey}:history`;
+    const historyData: Record<string, string[]> = {};
+    for (const [key, cardSet] of Object.entries(cardHistory)) {
+      historyData[key] = Array.from(cardSet);
+    }
+    localStorage.setItem(historyKey, JSON.stringify(historyData));
   }, [
     mounted,
     currentCard,
@@ -238,6 +302,7 @@ export default function PlayContent() {
     storageKey,
     forcedCategory,
     forcedRemaining,
+    cardHistory,
   ]);
 
   const endSession = () => {
@@ -388,7 +453,10 @@ export default function PlayContent() {
                 setIndex(0);
                 setCurrentCard({
                   category,
-                  text: randomItem(decks[category as keyof typeof decks]),
+                  text: getNextCardFromDeck(category),
+                });
+                setCardHistory({
+                  [category]: new Set([currentCard?.text || ""]),
                 });
                 return;
               }
@@ -400,7 +468,7 @@ export default function PlayContent() {
               // show the chosen direction immediately
               setCurrentCard({
                 category,
-                text: randomItem(decks[category as keyof typeof decks]),
+                text: getNextCardFromDeck(category),
               });
             }}
           />
@@ -414,8 +482,9 @@ export default function PlayContent() {
               setIndex(0);
               setCurrentCard({
                 category,
-                text: randomItem(decks[category as keyof typeof decks]),
+                text: getNextCardFromDeck(category),
               });
+              setCardHistory({ [category]: new Set() });
             }}
           />
         )}
@@ -450,7 +519,7 @@ export default function PlayContent() {
               </button>
 
               {mode === "sanctuary" ? (
-                <div className="min-w-[180px]">
+                <div className="min-w-45">
                   <Progress
                     current={Math.min(index + 1, sanctuaryTotal)}
                     total={sanctuaryTotal}
