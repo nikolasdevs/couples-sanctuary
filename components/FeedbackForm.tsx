@@ -103,8 +103,8 @@ export default function FeedbackForm() {
       </h2>
 
       <p className="mt-3 text-sm leading-relaxed text-white/70">
-        Your feedback is anonymous. We do not ask for your name, email, or any
-        identifying details.
+        Your feedback is anonymous. It helps us improve the experience for
+        couples.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
