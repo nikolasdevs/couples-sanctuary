@@ -139,12 +139,21 @@ export default function LandingPage() {
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             >
               <Link
-                href="/dashboard"
+                href="/signup"
                 className="block w-full rounded-full bg-linear-to-r from-rose-500 to-[#B11226] py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-rose-900/30 transition hover:from-rose-400 hover:to-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]"
               >
-                Enter the Sanctuary
+                Get Started
               </Link>
             </motion.div>
+            <p className="mt-3 text-center text-sm text-zinc-500">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-rose-400 transition hover:text-rose-300"
+              >
+                Sign in
+              </Link>
+            </p>
           </motion.div>
 
           {/* Scroll hint */}
@@ -313,10 +322,10 @@ export default function LandingPage() {
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             >
               <Link
-                href="/dashboard"
+                href="/signup"
                 className="block w-full rounded-full bg-linear-to-r from-rose-500 to-[#B11226] py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-rose-900/30 transition hover:from-rose-400 hover:to-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]"
               >
-                Enter the Sanctuary
+                Get Started
               </Link>
             </motion.div>
           </motion.div>

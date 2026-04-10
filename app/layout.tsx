@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/context/AuthContext";
 import ServiceWorker from "@/components/ServiceWorker";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
@@ -44,7 +45,9 @@ export default function RootLayout({
         className={`${poppins.variable} antialiased bg-[#0A0A0A] text-zinc-50`}
       >
         <ServiceWorker />
-        <div className="min-h-dvh safe-area">{children}</div>
+        <AuthProvider>
+          <div className="min-h-dvh safe-area">{children}</div>
+        </AuthProvider>
       </body>
     </html>
   );
