@@ -1,6 +1,10 @@
+"use client";
+
 import FeedbackForm from "@/components/FeedbackForm";
 import InstallPwaButton from "@/components/InstallPwaButton";
+import { useDashboard } from "@/lib/useDashboard";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 const buttonBase =
   "inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold " +
@@ -9,6 +13,16 @@ const buttonBase =
   "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99]";
 
 export default function EndPage() {
+  const { recordSession } = useDashboard();
+  const recorded = useRef(false);
+
+  useEffect(() => {
+    if (!recorded.current) {
+      recorded.current = true;
+      recordSession();
+    }
+  }, [recordSession]);
+
   return (
     <main className="min-h-screen flex items-center justify-center px-6 py-8 md:py-12 text-center flex-col space-y-12 ">
       {/* Background */}
@@ -46,14 +60,14 @@ export default function EndPage() {
 
       <div className="flex items-center justify-center gap-3 flex-wrap">
         <Link
-          href="/"
+          href="/dashboard"
           className={[
             buttonBase,
             "border border-white/10 bg-white/5 text-zinc-50 backdrop-blur-md",
             "hover:bg-white/10 hover:shadow-xl hover:shadow-black/30",
           ].join(" ")}
         >
-          Return to Home
+          Return to Dashboard
         </Link>
 
         <InstallPwaButton
