@@ -64,6 +64,7 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({
       user: { id: userId, email, name: name.slice(0, 100) },
+      token,
     });
 
     return setAuthCookie(response, token);

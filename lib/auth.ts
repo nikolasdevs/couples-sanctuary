@@ -60,10 +60,22 @@ export function clearAuthCookie(response: Response): Response {
   return response;
 }
 
-/** Read the current user from the request cookie (for API routes) */
+/** Read the current user from the request (for API routes).
+ *  Checks Authorization: Bearer header first, then falls back to cookie. */
 export async function getAuthUser(
   request: Request,
 ): Promise<AuthPayload | null> {
+  // 1. Check Authorization header (mobile / external clients)
+  const authHeader = request.headers.get("authorization") ?? "";
+  if (authHeader.startsWith("Bearer ")) {
+    const bearerToken = authHeader.slice(7);
+    if (bearerToken) {
+      const payload = await verifyToken(bearerToken);
+      if (payload) return payload;
+    }
+  }
+
+  // 2. Fall back to cookie (browser / web app)
   const cookieHeader = request.headers.get("cookie") ?? "";
   const match = cookieHeader.match(
     new RegExp(`(?:^|;\\s*)${COOKIE_NAME}=([^;]+)`),
