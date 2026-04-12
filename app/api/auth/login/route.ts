@@ -1,25 +1,19 @@
 import { pool } from "@/lib/db";
 import { ensureAuthTables } from "@/lib/authDb";
 import { signToken, setAuthCookie } from "@/lib/auth";
+import { LoginSchema } from "@/lib/schemas";
+import { apiError, zodError } from "@/lib/apiError";
 import { compare } from "bcryptjs";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as {
-      email?: string;
-      password?: string;
-    };
+    const raw = await request.json();
+    const parsed = LoginSchema.safeParse(raw);
+    if (!parsed.success) return zodError(parsed.error);
 
-    const email = body.email?.trim().toLowerCase();
-    const password = body.password;
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required." },
-        { status: 400 },
-      );
-    }
+    const { email: rawEmail, password } = parsed.data;
+    const email = rawEmail.trim().toLowerCase();
 
     await ensureAuthTables();
 
@@ -29,20 +23,14 @@ export async function POST(request: Request) {
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: "Invalid email or password." },
-        { status: 401 },
-      );
+      return apiError("Invalid email or password.", "INVALID_CREDENTIALS", 401);
     }
 
     const user = result.rows[0];
     const valid = await compare(password, user.password_hash);
 
     if (!valid) {
-      return NextResponse.json(
-        { error: "Invalid email or password." },
-        { status: 401 },
-      );
+      return apiError("Invalid email or password.", "INVALID_CREDENTIALS", 401);
     }
 
     const token = await signToken({ userId: user.id, email: user.email });
@@ -55,9 +43,6 @@ export async function POST(request: Request) {
     return setAuthCookie(response, token);
   } catch (err) {
     console.error("Login error:", err);
-    return NextResponse.json(
-      { error: "Unable to log in." },
-      { status: 500 },
-    );
+    return apiError("Unable to log in.", "INTERNAL_ERROR", 500);
   }
 }

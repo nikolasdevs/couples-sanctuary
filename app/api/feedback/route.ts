@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
-
-const MAX_MESSAGE_LENGTH = 1000;
+import { FeedbackSchema } from "@/lib/schemas";
+import { apiError, zodError } from "@/lib/apiError";
 
 declare global {
   var feedbackPool: Pool | undefined;
@@ -11,9 +11,7 @@ const pool =
   globalThis.feedbackPool ??
   new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    ssl: { rejectUnauthorized: false },
   });
 
 if (process.env.NODE_ENV !== "production") {
@@ -21,7 +19,6 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 async function ensureFeedbackTable() {
-  // Create table if it doesn't exist
   await pool.query(`
     CREATE TABLE IF NOT EXISTS feedback (
       id BIGSERIAL PRIMARY KEY,
@@ -34,7 +31,6 @@ async function ensureFeedbackTable() {
     );
   `);
 
-  // Add columns if they don't exist (migration)
   await pool.query(`
     ALTER TABLE feedback
     ADD COLUMN IF NOT EXISTS rating SMALLINT CHECK (rating >= 1 AND rating <= 5);
@@ -54,53 +50,18 @@ async function ensureFeedbackTable() {
 export async function POST(request: Request) {
   try {
     if (!process.env.DATABASE_URL) {
-      return NextResponse.json(
-        { error: "Database connection is not configured." },
-        { status: 500 },
+      return apiError(
+        "Database connection is not configured.",
+        "DB_NOT_CONFIGURED",
+        500,
       );
     }
 
-    const body = (await request.json()) as {
-      rating?: number;
-      feeling?: string;
-      closer?: string;
-      message?: string;
-      source?: string;
-    };
+    const raw = await request.json();
+    const parsed = FeedbackSchema.safeParse(raw);
+    if (!parsed.success) return zodError(parsed.error);
 
-    const rating = Number(body.rating);
-    const feeling = typeof body.feeling === "string" ? body.feeling.trim() : "";
-    const closer = typeof body.closer === "string" ? body.closer.trim() : "";
-    const message = typeof body.message === "string" ? body.message.trim() : "";
-    const source = typeof body.source === "string" ? body.source : "unknown";
-
-    if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
-      return NextResponse.json(
-        { error: "Please provide a rating between 1 and 5." },
-        { status: 400 },
-      );
-    }
-
-    if (!feeling) {
-      return NextResponse.json(
-        { error: "Please select how the experience felt." },
-        { status: 400 },
-      );
-    }
-
-    if (!closer) {
-      return NextResponse.json(
-        { error: "Please select if it brought you closer." },
-        { status: 400 },
-      );
-    }
-
-    if (message.length > MAX_MESSAGE_LENGTH) {
-      return NextResponse.json(
-        { error: "Message is too long." },
-        { status: 400 },
-      );
-    }
+    const { rating, feeling, closer, message, source } = parsed.data;
 
     await ensureFeedbackTable();
 
@@ -111,16 +72,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    const errorMessage =
-      err instanceof Error ? err.message : "Unknown error occurred";
-    console.error("Feedback submission error:", errorMessage, err);
-
-    return NextResponse.json(
-      {
-        error: "Unable to process feedback.",
-        ...(process.env.NODE_ENV === "development" && { detail: errorMessage }),
-      },
-      { status: 500 },
-    );
+    console.error("Feedback submission error:", err);
+    return apiError("Unable to process feedback.", "INTERNAL_ERROR", 500);
   }
 }

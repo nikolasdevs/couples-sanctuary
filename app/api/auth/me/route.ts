@@ -1,16 +1,14 @@
 import { pool } from "@/lib/db";
 import { ensureAuthTables } from "@/lib/authDb";
 import { getAuthUser } from "@/lib/auth";
+import { apiError } from "@/lib/apiError";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
     const auth = await getAuthUser(request);
     if (!auth) {
-      return NextResponse.json(
-        { error: "Not authenticated." },
-        { status: 401 },
-      );
+      return apiError("Not authenticated.", "UNAUTHORIZED", 401);
     }
 
     await ensureAuthTables();
@@ -21,15 +19,11 @@ export async function GET(request: Request) {
     );
 
     if (userResult.rows.length === 0) {
-      return NextResponse.json(
-        { error: "User not found." },
-        { status: 404 },
-      );
+      return apiError("User not found.", "NOT_FOUND", 404);
     }
 
     const user = userResult.rows[0];
 
-    // Check couple status
     const coupleResult = await pool.query(
       `SELECT c.id, c.invite_code, c.status,
               c.user_a_id, c.user_b_id,
@@ -70,9 +64,6 @@ export async function GET(request: Request) {
     });
   } catch (err) {
     console.error("Auth me error:", err);
-    return NextResponse.json(
-      { error: "Unable to fetch user." },
-      { status: 500 },
-    );
+    return apiError("Unable to fetch user.", "INTERNAL_ERROR", 500);
   }
 }

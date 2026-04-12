@@ -1,5 +1,7 @@
 import { pool } from "@/lib/db";
 import { ensureSyncTables, generateCode } from "@/lib/syncDb";
+import { CreateSyncSchema } from "@/lib/schemas";
+import { apiError, zodError } from "@/lib/apiError";
 import { NextResponse } from "next/server";
 
 /**
@@ -9,33 +11,21 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   try {
     if (!process.env.DATABASE_URL) {
-      return NextResponse.json(
-        { error: "Database not configured." },
-        { status: 500 },
-      );
+      return apiError("Database not configured.", "DB_NOT_CONFIGURED", 500);
     }
 
-    const body = (await request.json()) as {
-      type?: string;
-      weekKey?: string;
-    };
+    const raw = await request.json();
+    const parsed = CreateSyncSchema.safeParse(raw);
+    if (!parsed.success) return zodError(parsed.error);
 
-    const type = body.type;
-    if (type !== "checkin" && type !== "compatibility") {
-      return NextResponse.json(
-        { error: "type must be 'checkin' or 'compatibility'." },
-        { status: 400 },
-      );
-    }
-
+    const { type, weekKey: rawWeekKey } = parsed.data;
     const weekKey =
-      type === "checkin" && typeof body.weekKey === "string"
-        ? body.weekKey.slice(0, 20)
+      type === "checkin" && typeof rawWeekKey === "string"
+        ? rawWeekKey
         : null;
 
     await ensureSyncTables();
 
-    // Generate a unique code (retry on collision)
     let code = "";
     for (let i = 0; i < 5; i++) {
       code = generateCode();
@@ -47,7 +37,7 @@ export async function POST(request: Request) {
         break;
       } catch (err: unknown) {
         const pgErr = err as { code?: string };
-        if (pgErr.code === "23505" && i < 4) continue; // unique violation, retry
+        if (pgErr.code === "23505" && i < 4) continue;
         throw err;
       }
     }
@@ -55,9 +45,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ code });
   } catch (err) {
     console.error("Sync create error:", err);
-    return NextResponse.json(
-      { error: "Unable to create sync session." },
-      { status: 500 },
-    );
+    return apiError("Unable to create sync session.", "INTERNAL_ERROR", 500);
   }
 }

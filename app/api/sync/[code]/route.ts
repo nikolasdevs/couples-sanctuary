@@ -1,5 +1,6 @@
 import { pool } from "@/lib/db";
 import { ensureSyncTables } from "@/lib/syncDb";
+import { apiError } from "@/lib/apiError";
 import { NextResponse } from "next/server";
 
 interface RouteContext {
@@ -15,10 +16,7 @@ export async function GET(
 ) {
   try {
     if (!process.env.DATABASE_URL) {
-      return NextResponse.json(
-        { error: "Database not configured." },
-        { status: 500 },
-      );
+      return apiError("Database not configured.", "DB_NOT_CONFIGURED", 500);
     }
 
     const { code } = await context.params;
@@ -32,10 +30,7 @@ export async function GET(
     );
 
     if (sessionRes.rows.length === 0) {
-      return NextResponse.json(
-        { error: "Session not found." },
-        { status: 404 },
-      );
+      return apiError("Session not found.", "NOT_FOUND", 404);
     }
 
     const session = sessionRes.rows[0] as {
@@ -51,10 +46,9 @@ export async function GET(
         `UPDATE sync_sessions SET status = 'expired' WHERE id = $1`,
         [session.id],
       );
-      return NextResponse.json({ error: "Session expired." }, { status: 410 });
+      return apiError("Session expired.", "SESSION_EXPIRED", 410);
     }
 
-    // Get responses
     const respRes = await pool.query(
       `SELECT partner, name, responses FROM sync_responses WHERE session_id = $1 ORDER BY partner`,
       [session.id],
@@ -66,10 +60,7 @@ export async function GET(
       name: string;
       responses: unknown;
     }[]) {
-      partners[row.partner] = {
-        name: row.name,
-        responses: row.responses,
-      };
+      partners[row.partner] = { name: row.name, responses: row.responses };
     }
 
     return NextResponse.json({
@@ -81,9 +72,6 @@ export async function GET(
     });
   } catch (err) {
     console.error("Sync status error:", err);
-    return NextResponse.json(
-      { error: "Unable to fetch session." },
-      { status: 500 },
-    );
+    return apiError("Unable to fetch session.", "INTERNAL_ERROR", 500);
   }
 }
