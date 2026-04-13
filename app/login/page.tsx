@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const { login, user } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const reduceMotion = useReducedMotion();
 
@@ -16,13 +16,13 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Redirect if already logged in
-  if (user) {
-    router.replace("/dashboard");
-    return null;
-  }
+  useEffect(() => {
+    if (!authLoading && user) router.replace("/dashboard");
+  }, [user, authLoading, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  if (authLoading || user) return null;
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);

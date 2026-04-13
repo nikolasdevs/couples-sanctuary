@@ -39,6 +39,10 @@ export async function verifyToken(
   }
 }
 
+// Secure flag is required in production but must be omitted in dev so
+// HttpOnly cookies work over plain HTTP on localhost.
+const SECURE = process.env.NODE_ENV === "production" ? "; Secure" : "";
+
 /** Set the auth cookie on a Response */
 export function setAuthCookie(
   response: Response,
@@ -46,7 +50,7 @@ export function setAuthCookie(
 ): Response {
   response.headers.append(
     "Set-Cookie",
-    `${COOKIE_NAME}=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${TOKEN_MAX_AGE}`,
+    `${COOKIE_NAME}=${token}; HttpOnly${SECURE}; SameSite=Lax; Path=/; Max-Age=${TOKEN_MAX_AGE}`,
   );
   return response;
 }
@@ -55,7 +59,7 @@ export function setAuthCookie(
 export function clearAuthCookie(response: Response): Response {
   response.headers.append(
     "Set-Cookie",
-    `${COOKIE_NAME}=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0`,
+    `${COOKIE_NAME}=; HttpOnly${SECURE}; SameSite=Lax; Path=/; Max-Age=0`,
   );
   return response;
 }

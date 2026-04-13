@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
-  const { signup, user } = useAuth();
+  const { signup, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const reduceMotion = useReducedMotion();
 
@@ -17,12 +17,13 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (user) {
-    router.replace("/dashboard");
-    return null;
-  }
+  useEffect(() => {
+    if (!authLoading && user) router.replace("/dashboard");
+  }, [user, authLoading, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  if (authLoading || user) return null;
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);

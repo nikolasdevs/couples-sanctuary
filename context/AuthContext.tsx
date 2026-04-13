@@ -80,12 +80,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
         if (!res.ok) return { error: data.error };
         setState((s) => ({ ...s, user: data.user, loading: false }));
+        await refresh();
         return {};
       } catch {
         return { error: "Network error." };
       }
     },
-    [],
+    [refresh],
   );
 
   const login = useCallback(

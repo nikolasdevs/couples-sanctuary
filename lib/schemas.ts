@@ -3,14 +3,14 @@ import { z } from "zod";
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 export const LoginSchema = z.object({
-  email: z.string().email("Invalid email address."),
+  email: z.email("Invalid email address."),
   password: z.string().min(1, "Password is required."),
 });
 
 export const SignupSchema = z.object({
-  email: z.string().email("Invalid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
-  name: z.string().max(100).optional().default(""),
+  email: z.email("Invalid email address."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
+  name: z.string().trim().min(1, "Name is required.").max(100),
 });
 
 export type LoginInput = z.infer<typeof LoginSchema>;

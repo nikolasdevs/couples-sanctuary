@@ -1,10 +1,21 @@
 import { pool } from "@/lib/db";
 
-let _ensured = false;
+// Promise-based guard: concurrent cold-start requests share one setup promise
+// instead of all firing duplicate queries. If setup fails, the promise is
+// cleared so the next request can retry.
+let _ensurePromise: Promise<void> | null = null;
 
-export async function ensureAuthTables() {
-  if (_ensured) return;
+export function ensureAuthTables(): Promise<void> {
+  if (!_ensurePromise) {
+    _ensurePromise = _doEnsure().catch((err) => {
+      _ensurePromise = null;
+      throw err;
+    });
+  }
+  return _ensurePromise;
+}
 
+async function _doEnsure(): Promise<void> {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id BIGSERIAL PRIMARY KEY,
@@ -38,8 +49,6 @@ export async function ensureAuthTables() {
     CREATE INDEX IF NOT EXISTS idx_couples_users
       ON couples(user_a_id, user_b_id);
   `);
-
-  _ensured = true;
 }
 
 const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

@@ -1,5 +1,4 @@
 import { pool } from "@/lib/db";
-import { ensureAuthTables } from "@/lib/authDb";
 import { getAuthUser } from "@/lib/auth";
 import { apiError } from "@/lib/apiError";
 import { NextResponse } from "next/server";
@@ -10,8 +9,6 @@ export async function GET(request: Request) {
     if (!auth) {
       return apiError("Not authenticated.", "UNAUTHORIZED", 401);
     }
-
-    await ensureAuthTables();
 
     const userResult = await pool.query(
       "SELECT id, email, name, created_at FROM users WHERE id = $1",
