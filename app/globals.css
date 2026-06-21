@@ -120,7 +120,7 @@ a:hover {
   color: var(--accent);
 }
 
-:focus-visible {
+:focus-visible:not(input):not(textarea):not(select) {
   outline: 2px solid rgba(177, 18, 38, 0.75);
   outline-offset: 3px;
 }
