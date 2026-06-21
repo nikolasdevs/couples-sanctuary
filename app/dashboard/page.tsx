@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useDashboard } from "@/lib/useDashboard";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -28,8 +29,9 @@ function getCheckinStatus(checkinDay: number, checkinsDone: number): string {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { data, ready } = useDashboard();
+  const router = useRouter();
   const displayName = user?.name || user?.email || "";
   const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
@@ -105,6 +107,13 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
+
+            <button
+              onClick={async () => { await logout(); router.replace("/login"); }}
+              className="text-xs text-white/30 transition hover:text-white/60"
+            >
+              Sign out
+            </button>
           </motion.div>
 
           {/* Health Score */}
