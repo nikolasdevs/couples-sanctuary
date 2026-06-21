@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, type BaseSyntheticEvent } from "react";
+import { useState, useEffect, Suspense, type BaseSyntheticEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const reduceMotion = useReducedMotion();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -146,5 +146,13 @@ export default function ResetPasswordPage() {
         </p>
       </motion.div>
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
