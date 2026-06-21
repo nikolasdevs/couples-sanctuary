@@ -14,8 +14,9 @@ import { scoreCheckIn } from "@/lib/checkinScoring";
 import type { Responses } from "@/lib/checkinScoring";
 import { useDashboard } from "@/lib/useDashboard";
 import { useCheckinStorage } from "@/lib/useCheckinStorage";
-import { useSync, type SyncSession } from "@/lib/useSync";
+import { useSync } from "@/lib/useSync";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
@@ -251,6 +252,13 @@ function CheckInActiveContent() {
   return (
     <main className="min-h-dvh bg-[#0A0A0A] pb-24">
       <div className="mx-auto w-full max-w-xl px-5 pt-8">
+        <Link
+          href="/dashboard"
+          className="mb-6 inline-block text-xs text-white/40 transition hover:text-white/70"
+        >
+          ← Dashboard
+        </Link>
+
         {/* ── Mode selection (Together / Apart / Join) ── */}
         {phase === "mode-select" && (
           <ModeSelect
