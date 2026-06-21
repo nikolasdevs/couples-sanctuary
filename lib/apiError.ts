@@ -5,6 +5,7 @@ import type { ZodError } from "zod";
 export type ApiErrorCode =
   | "VALIDATION_ERROR"
   | "INVALID_CREDENTIALS"
+  | "INVALID_TOKEN"
   | "UNAUTHORIZED"
   | "NOT_FOUND"
   | "CONFLICT"

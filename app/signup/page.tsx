@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type BaseSyntheticEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default function SignupPage() {
 
   if (authLoading || user) return null;
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: BaseSyntheticEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -115,12 +115,12 @@ export default function SignupPage() {
               id="password"
               type="password"
               required
-              minLength={6}
+              minLength={8}
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1.5 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition focus:border-rose-500/40 focus:ring-1 focus:ring-rose-500/20"
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
             />
           </div>
 

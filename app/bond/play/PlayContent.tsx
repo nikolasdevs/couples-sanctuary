@@ -307,7 +307,7 @@ export default function PlayContent() {
 
   const endSession = () => {
     localStorage.removeItem(storageKey);
-    router.push("/experience/end");
+    router.push("/bond/end");
   };
 
   const handleNext = () => {

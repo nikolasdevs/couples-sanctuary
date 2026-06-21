@@ -1,4 +1,4 @@
-// app/experience/page.tsx
+// app/bond/page.tsx
 "use client";
 
 import { FocusCardsDemo } from "@/components/FocusCards";
@@ -84,7 +84,7 @@ function ExperienceContent() {
   const closeModal = () => {
     setShowSanctuaryLen(false);
     // Clean up any deep-link params so refresh doesn't re-open the modal
-    router.replace("/experience", { scroll: false });
+    router.replace("/bond", { scroll: false });
   };
 
   const segBtn = (active: boolean) =>
@@ -132,10 +132,10 @@ function ExperienceContent() {
           variants={fadeUp}
         >
           <Link
-            href="/"
+            href="/dashboard"
             className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-100 backdrop-blur-md transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B11226]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
-            ← Home
+            ← Dashboard
           </Link>
 
           <p className="text-xs text-white/55">
@@ -273,7 +273,7 @@ function ExperienceContent() {
                 </div>
 
                 <Link
-                  href={`/experience/play?mode=sanctuary&len=${sanctuaryLen}`}
+                  href={`/bond/play?mode=sanctuary&len=${sanctuaryLen}`}
                   className="mt-5 block w-full rounded-full bg-linear-to-r from-rose-500 to-[#B11226] py-4 text-center text-base font-semibold text-white shadow-lg shadow-rose-900/25 transition-all duration-200 ease-out hover:from-rose-100 hover:to-[#ff7b8b] hover:shadow-xl hover:shadow-rose-900/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B11226]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black active:scale-[0.99]"
                 >
                   Start Sanctuary

@@ -5,6 +5,7 @@ import { HealthGauge } from "@/components/dashboard/HealthGauge";
 import { InsightCard } from "@/components/dashboard/InsightCard";
 import { PillarCard } from "@/components/dashboard/PillarCard";
 import { StreakTracker } from "@/components/dashboard/StreakTracker";
+import { useAuth } from "@/context/AuthContext";
 import { useDashboard } from "@/lib/useDashboard";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import Image from "next/image";
@@ -23,13 +24,13 @@ function getCheckinStatus(checkinDay: number, checkinsDone: number): string {
   if (checkinsDone === 0) return "Start first check-in";
   const today = new Date().getDay();
   if (today === checkinDay) return "Ready now";
-  // days until next check-in
-  const diff = (checkinDay - today + 7) % 7;
   return `Due ${DAYS[checkinDay].slice(0, 3)}`;
 }
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const { data, ready } = useDashboard();
+  const displayName = user?.name || user?.email || "";
   const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
 
@@ -97,7 +98,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-zinc-50">
-                  {greeting}{names ? "," : ""}
+                  {greeting}{displayName ? `, ${displayName}` : ""}
                 </p>
                 {names && (
                   <p className="text-xs text-white/50">{names}</p>
@@ -124,7 +125,7 @@ export default function DashboardPage() {
             </p>
             <div className="grid grid-cols-3 gap-3">
               <PillarCard
-                href="/experience"
+                href="/bond"
                 icon="🕯️"
                 title="Bond"
                 subtitle="Connect through shared moments"
@@ -164,7 +165,7 @@ export default function DashboardPage() {
           {/* Empty state prompt if no names set */}
           {!names && (
             <motion.div
-              className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-5 text-center"
+              className="rounded-2xl border border-dashed border-white/10 bg-white/2 p-5 text-center"
               variants={fadeUp}
             >
               <p className="text-sm text-white/50 leading-relaxed">

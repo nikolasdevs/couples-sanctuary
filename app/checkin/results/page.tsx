@@ -174,7 +174,7 @@ export default function CheckInResultsPage() {
             }}
           >
             <Link
-              href="/experience"
+              href="/bond"
               className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-center text-sm font-semibold text-zinc-50 transition hover:bg-white/[0.07]"
             >
               🕯️ Start a Bonding Session

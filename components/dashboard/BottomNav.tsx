@@ -11,7 +11,7 @@ interface NavItem {
 }
 
 const items: NavItem[] = [
-  { href: "/experience", label: "Bond", icon: "🕯️" },
+  { href: "/bond", label: "Bond", icon: "🕯️" },
   { href: "/compatibility", label: "Compatibility", icon: "🔮" },
   { href: "/checkin", label: "Check-In", icon: "💬" },
   { href: "/dashboard", label: "You", icon: "✦" },

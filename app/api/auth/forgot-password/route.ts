@@ -3,12 +3,18 @@ import { ensureResetTable } from "@/lib/resetDb";
 import { ensureAuthTables } from "@/lib/authDb";
 import { apiError } from "@/lib/apiError";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import { createTransport } from "nodemailer";
 import { createHash, randomBytes } from "crypto";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://sanctuary.visit2nigeria.com";
+
+function getMailer() {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  if (!user || !pass) throw new Error("GMAIL_USER or GMAIL_APP_PASSWORD not configured");
+  return createTransport({ service: "gmail", auth: { user, pass } });
+}
 
 export async function POST(request: Request) {
   try {
@@ -38,21 +44,21 @@ export async function POST(request: Request) {
     const rawToken = randomBytes(32).toString("hex");
     const tokenHash = createHash("sha256").update(rawToken).digest("hex");
 
-    // Invalidate any existing unused tokens for this user before creating a new one.
+    // Invalidate any existing unused tokens for this user.
     await pool.query(
       "UPDATE password_reset_tokens SET used = TRUE WHERE user_id = $1 AND used = FALSE",
       [user.id],
     );
 
     await pool.query(
-      "INSERT INTO password_reset_tokens (user_id, token_hash) VALUES ($1, $2)",
+      "INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, NOW() + INTERVAL '1 hour')",
       [user.id, tokenHash],
     );
 
     const resetUrl = `${APP_URL}/reset-password?token=${rawToken}`;
 
-    await resend.emails.send({
-      from: "Couples Sanctuary <noreply@sanctuary.visit2nigeria.com>",
+    await getMailer().sendMail({
+      from: `Couples Sanctuary <${process.env.GMAIL_USER}>`,
       to: email,
       subject: "Reset your password",
       html: `

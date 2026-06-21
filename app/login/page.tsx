@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type BaseSyntheticEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
@@ -22,7 +22,7 @@ export default function LoginPage() {
 
   if (authLoading || user) return null;
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: BaseSyntheticEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -85,12 +85,20 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-xs font-medium text-zinc-400"
-            >
-              Password
-            </label>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block text-xs font-medium text-zinc-400"
+              >
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-zinc-500 transition hover:text-rose-400"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <input
               id="password"
               type="password"

@@ -1,10 +1,18 @@
 import { pool } from "@/lib/db";
 
-let _ensured = false;
+let _ensurePromise: Promise<void> | null = null;
 
-export async function ensureResetTable(): Promise<void> {
-  if (_ensured) return;
+export function ensureResetTable(): Promise<void> {
+  if (!_ensurePromise) {
+    _ensurePromise = _doEnsure().catch((err) => {
+      _ensurePromise = null;
+      throw err;
+    });
+  }
+  return _ensurePromise;
+}
 
+async function _doEnsure(): Promise<void> {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS password_reset_tokens (
       id BIGSERIAL PRIMARY KEY,
@@ -19,6 +27,4 @@ export async function ensureResetTable(): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_reset_tokens_hash
       ON password_reset_tokens(token_hash);
   `);
-
-  _ensured = true;
 }
